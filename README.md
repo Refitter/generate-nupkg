@@ -24,50 +24,50 @@ Additional arguments to pass through to the [Refitter](https://github.com/christ
 ### `publish-artifacts`
 Setting this will publish the generated code as C# files as build artifacts
 
-### `client-sdk`
-Setting this will package the generated code into a NuGet package and publish this as a build artifact. The following inputs are ***Required*** when `client-sdk` is enabled
+### `version`
+The version number used for the NuGet package (default: `1.0.${{ github.run_number }}`)
 
-- ### `client-sdk-version` - The version number used for the NuGet package (default: `1.0.${{ github.run_number }}`)
-- ### `client-sdk-target-framework` - The target framework used in the generated Client SDK (default: `net6.0`)
-- ### `client-sdk-package-id` - The value used as `<PackageId>` for package the generated code into a NuGet package
-- ### `client-sdk-title` - The value used as `<Title>` for package the generated code into a NuGet package
-- ### `client-sdk-root-namespace` - The value used as `<RootNamespace>` for package the generated code into - a NuGet package
-- ### `client-sdk-assembly` - The value used as `<AssemblyName>` for package the generated code into a - NuGet package
-- ### `client-sdk-authors` - The value used as `<Authors>` for package the generated code into a NuGet - package
-- ### `client-sdk-company` - The value used as `<Company>` for package the generated code into a NuGet - package
-- ### `client-sdk-product` - The value used as `<Product>` for package the generated code into a NuGet - package
-- ### `client-sdk-description` - The value used as `<Description>` for package the generated code into a - NuGet package
-- ### `client-sdk-license` - The value used as `<PackageLicenseExpression>` for package the generated code - into a NuGet package
-- ### `client-sdk-project-url` - The value used as `<PackageProjectUrl>` and `<RepositoryUrl>` for package - the generated code into a NuGet package
-- ### `client-sdk-repository-type` - The value used as `<RepositoryType>` for package the generated code into a NuGet package
+### `target-framework`
+The target framework used in the generated Client SDK (default: `net6.0`)
+
+### `package-id`
+The value used as `<PackageId>` for package the generated code into a NuGet package
+
+### `title`
+The value used as `<Title>` for package the generated code into a NuGet package
+
+### `root-namespace`
+The value used as `<RootNamespace>` for package the generated code into - a NuGet package
+
+### `assembly`
+The value used as `<AssemblyName>` for package the generated code into a - NuGet package
+
+### `authors`
+The value used as `<Authors>` for package the generated code into a NuGet - package
+
+### `company`
+The value used as `<Company>` for package the generated code into a NuGet - package
+
+### `product`
+The value used as `<Product>` for package the generated code into a NuGet - package
+
+### `description`
+The value used as `<Description>` for package the generated code into a - NuGet package
+
+### `license`
+The value used as `<PackageLicenseExpression>` for package the generated code - into a NuGet package
+
+### `project-url`
+The value used as `<PackageProjectUrl>` and `<RepositoryUrl>` for package - the generated code into a NuGet package
+
+### `repository-type`
+The value used as `<RepositoryType>` for package the generated code into a NuGet package
 
 ## Outputs
 No outputs are returned. The generated client is placed in the current directory and called **Output.cs** which contains both the Refit interface and the contract types used by the API
 
 
 # Examples
-
-### Using a File for OpenAPI specifications document
-
-```yaml
-jobs:
-  smoke-test-url:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      # Use the action to generate a Refit client interface
-      # This produces a file called Output.cs as a build artifact
-      - uses: christianhelle/refitter-action@main
-        name: Generate Refit Client
-        with:        
-          openapi-file: openapi.json
-          namespace: ChristianHelle.Examples.Petstore.v3
-      
-      # Do something with the generated client (like include it in an existing project)
-      - run: Get-Content Output.cs | Write-Host
-        shell: pwsh
-```
 
 ### Using a URL and producing a Client SDK NuGet package
 
@@ -80,20 +80,20 @@ jobs:
       
       # Use the action to generate a Refit client interface
       # This produces a NuGet package as a build artifact
-      - uses: christianhelle/refitter-action@main
+      - uses: refitter/generate-nupkg@v1
         name: Generate Refit Client SDK
         with:
           openapi-url: https://petstore3.swagger.io/api/v3/openapi.json
           namespace: ChristianHelle.Examples.Petstore.v3
           client-sdk: true
-          client-sdk-version: 3.0.${{ github.run_number }}
-          client-sdk-package-id: ChristianHelle.Examples.Petstore.v3
-          client-sdk-title: ChristianHelle.Examples.Petstore.v3
-          client-sdk-root-namespace: ChristianHelle.Examples.Petstore.v3
-          client-sdk-assembly: ChristianHelle.Examples.Petstore.v3
-          client-sdk-product: ChristianHelle.Examples.Petstore.v3
-          client-sdk-authors: Christian Resma Helle
-          client-sdk-company: Christian Resma Helle
-          client-sdk-description: Example generated code using Refitter and the Swagger Petstore v3 example OpenAPI specifications
-          client-sdk-project-url: https://github.com/christianhelle/refitter-action
+          version: 3.0.${{ github.run_number }}
+          package-id: ChristianHelle.Examples.Petstore.v3
+          title: ChristianHelle.Examples.Petstore.v3
+          root-namespace: ChristianHelle.Examples.Petstore.v3
+          assembly: ChristianHelle.Examples.Petstore.v3
+          product: ChristianHelle.Examples.Petstore.v3
+          authors: Christian Resma Helle
+          company: Christian Resma Helle
+          description: Example generated code using Refitter and the Swagger Petstore v3 example OpenAPI specifications
+          project-url: https://github.com/christianhelle/refitter
 ```

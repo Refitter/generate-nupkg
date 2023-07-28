@@ -34,53 +34,49 @@ inputs:
     required: false
     type: boolean
     default: true
-  client-sdk:
-    description: Setting this will publish the generated code as a NuGet package
-    required: false
-    type: boolean
-    default: false
-  client-sdk-version:
+    
+  version:
     description: The version number used for the NuGet package
     required: false
     type: string
     default: 1.0.${{ github.run_number }}
-  client-sdk-target-framework:
+  target-framework:
     description: The target framework used in the Client SDK
     required: false
     type: string
     default: net6.0
-  client-sdk-package-id:
+  package-id:
     required: false
     type: string
-  client-sdk-title:
+  title:
     required: false
     type: string
-  client-sdk-root-namespace:
+  root-namespace:
     required: false
     type: string
-  client-sdk-assembly:
+  assembly:
     required: false
     type: string
-  client-sdk-authors:
+  authors:
     required: false
     type: string
-  client-sdk-product:
+  product:
     required: false
     type: string
-  client-sdk-company:
+  company:
     required: false
     type: string
-  client-sdk-description:
+  description:
     required: false
     type: string
-  client-sdk-project-url:
+  project-url:
     required: false
     type: string
-  client-sdk-license:
+  license:
     required: false
     type: string
     default: GPL-3.0-only
-  client-sdk-repository-type:
+  repository-type:
     required: false
     type: string
     default: git
@@ -89,63 +85,35 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install Refitter
-      run: dotnet tool install --global refitter
-      shell: pwsh
 
     - name: Generate Client Interface
-      run: |
-        $input = ""
-        if ("${{ inputs.openapi-url }}") {
-          $input = "${{ inputs.openapi-url }}"
-        } else {
-          $input = "${{ inputs.openapi-file }}"
-        }
-        $args = ""
-        if ("${{ inputs.namespace }}") {
-          $args = "$args --namespace ${{ inputs.namespace }}"
-        }
-        if ($${{ inputs.use-api-response }}) {
-          $args = "$args --use-api-response"
-        }
-        if ($${{ inputs.cancellation-tokens }}) {
-          $args = "$args --cancellation-tokens"
-        }
-        Write-Host "refitter $input $args ${{ inputs.command-args }}"
-        Start-Process refitter `
-          -Args "$input $args ${{ inputs.command-args }}" `
-          -NoNewWindow `
-          -PassThru `
-          -Wait
-      shell: pwsh
-
-    - name: Publish Generated Code Artifacts
-      if: ${{ inputs.publish-artifacts }}
-      uses: actions/upload-artifact@v3
+      uses: refitter/generate-code@v1
       with:
-        name: Refit C# Client Code
-        path: Output.cs
+        openapi-url: https://petstore3.swagger.io/api/v3/openapi.json
+        namespace: ChristianHelle.Examples.Petstore.v3
+        command-args: ${{ inputs.command-args }}
+        use-api-response: ${{ inputs.use-api-response }}
+        use-cancellation-tokens-response: ${{ inputs.cancellation-tokens }}
 
     - name: Generated C# project
-      if: ${{ inputs.client-sdk == 'true' }}
       run: |
         @'
         <Project Sdk="Microsoft.NET.Sdk">
           <PropertyGroup>
-            <TargetFramework>${{ inputs.client-sdk-target-framework }}</TargetFramework>
+            <TargetFramework>${{ inputs.target-framework }}</TargetFramework>
             <LangVersion>latest</LangVersion>
             <Nullable>enable</Nullable>
             <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-            <Authors>${{ inputs.client-sdk-authors }}</Authors>
-            <Product>${{ inputs.client-sdk-product }}</Product>
-            <PackageId>${{ inputs.client-sdk-package-id }}</PackageId>
-            <AssemblyName>${{ inputs.client-sdk-assembly }}</AssemblyName>
-            <Company>${{ inputs.client-sdk-company }}</Company>
-            <Description>${{ inputs.client-sdk-description }}</Description>
-            <PackageLicenseExpression>${{ inputs.client-sdk-license }}</PackageLicenseExpression>
-            <PackageProjectUrl>${{ inputs.client-sdk-project-url }}</PackageProjectUrl>
-            <RepositoryUrl>${{ inputs.client-sdk-project-url }}</RepositoryUrl>
-            <RepositoryType>${{ inputs.client-sdk-repository-type }}</RepositoryType>
+            <Authors>${{ inputs.authors }}</Authors>
+            <Product>${{ inputs.product }}</Product>
+            <PackageId>${{ inputs.package-id }}</PackageId>
+            <AssemblyName>${{ inputs.assembly }}</AssemblyName>
+            <Company>${{ inputs.company }}</Company>
+            <Description>${{ inputs.description }}</Description>
+            <PackageLicenseExpression>${{ inputs.license }}</PackageLicenseExpression>
+            <PackageProjectUrl>${{ inputs.project-url }}</PackageProjectUrl>
+            <RepositoryUrl>${{ inputs.project-url }}</RepositoryUrl>
+            <RepositoryType>${{ inputs.repository-type }}</RepositoryType>
             <PublishRepositoryUrl>true</PublishRepositoryUrl>
             <DebugType>embedded</DebugType>
             <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -164,19 +132,16 @@ runs:
       shell: pwsh
 
     - name: Build
-      if: ${{ inputs.client-sdk == 'true' }}
-      run: dotnet build -c Release /p:UseSourceLink=true -p:PackageVersion="${{ inputs.client-sdk-version }}"
+      run: dotnet build -c Release /p:UseSourceLink=true -p:PackageVersion="${{ inputs.version }}"
       shell: pwsh
 
     - name: Pack
-      if: ${{ inputs.client-sdk == 'true' }}
-      run: dotnet pack --no-build -c Release /p:UseSourceLink=true -p:PackageVersion="${{ inputs.client-sdk-version }}" --output .
+      run: dotnet pack --no-build -c Release /p:UseSourceLink=true -p:PackageVersion="${{ inputs.version }}" --output .
       shell: pwsh
 
     - name: Publish Client SDK Artifact
-      if: ${{ inputs.client-sdk == 'true' }}
       uses: actions/upload-artifact@v3
       with:
-        name: Refit Client SDK (NuGet)
+        name: NuGet Pacakge
         path: |
           **/*.nupkg

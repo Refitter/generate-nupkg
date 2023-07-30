@@ -86,15 +86,35 @@ runs:
   using: composite
   steps:
 
+    - name: Install Refitter
+      run: dotnet tool install --global refitter
+      shell: pwsh
+
     - name: Generate Client Interface
-      uses: refitter/generate-code@v1
-      with:
-        openapi-url: https://petstore3.swagger.io/api/v3/openapi.json
-        namespace: ChristianHelle.Examples.Petstore.v3
-        command-args: ${{ inputs.command-args }}
-        use-api-response: ${{ inputs.use-api-response }}
-        cancellation-tokens: ${{ inputs.cancellation-tokens }}
-        publish-artifacts: false
+      run: |
+        $input = ""
+        if ("${{ inputs.openapi-url }}") {
+          $input = "${{ inputs.openapi-url }}"
+        } else {
+          $input = "${{ inputs.openapi-file }}"
+        }
+        $args = ""
+        if ("${{ inputs.namespace }}") {
+          $args = "$args --namespace ${{ inputs.namespace }}"
+        }
+        if ($${{ inputs.use-api-response }}) {
+          $args = "$args --use-api-response"
+        }
+        if ($${{ inputs.cancellation-tokens }}) {
+          $args = "$args --cancellation-tokens"
+        }
+        Write-Host "refitter $input $args ${{ inputs.command-args }}"
+        Start-Process refitter `
+          -Args "$input $args ${{ inputs.command-args }}" `
+          -NoNewWindow `
+          -PassThru `
+          -Wait
+      shell: pwsh
 
     - name: Generated C# project
       run: |

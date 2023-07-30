@@ -30,7 +30,7 @@ inputs:
     required: false
     type: string
   publish-artifacts:
-    description: Setting this will publish the generated code as C# files
+    description: Publish the generated nuget package as a build artifact
     required: false
     type: boolean
     default: true
@@ -141,6 +141,7 @@ runs:
       shell: pwsh
 
     - name: Publish Client SDK Artifact
+      if: ${{ inputs.publish-artifacts }}
       uses: actions/upload-artifact@v3
       with:
         name: NuGet Pacakge

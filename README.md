@@ -22,7 +22,7 @@ Use cancellation tokens
 Additional arguments to pass through to the [Refitter](https://github.com/christianhelle/refitter) CLI tool.
 
 ### `publish-artifacts`
-Setting this will publish the generated code as C# files as build artifacts
+Publish the generated nuget package as a build artifact
 
 ### `version`
 The version number used for the NuGet package (default: `1.0.${{ github.run_number }}`)

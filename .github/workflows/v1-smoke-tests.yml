@@ -25,7 +25,6 @@ jobs:
           openapi-url: https://petstore3.swagger.io/api/v3/openapi.json
           namespace: ChristianHelle.Examples.Petstore.v3
           command-args: --no-logging
-          client-sdk: true
           version: 1.0.${{ github.run_number }}
           package-id: ChristianHelle.Examples.Petstore.v3
           title: ChristianHelle.Examples.Petstore.v3

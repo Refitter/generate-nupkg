@@ -1,4 +1,4 @@
-# Refitter Github Action
+# Generate-Nupkg
 Generate a Refit client interface and contracts from an OpenAPI specifications document using [Refitter](https://github.com/christianhelle/refitter).
 
 ## Inputs

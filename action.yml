@@ -34,6 +34,17 @@ inputs:
     required: false
     type: boolean
     default: true
+  multiple-interfaces:
+    type: choice
+    description: Generate a Refit interface for each endpoint. May be one of ByEndpoint, ByTag
+    options:
+    - ByEndpoint
+    - ByTag
+  output-filename:
+    description: Generated output filename
+    required: false
+    type: string
+    default: Output.cs
     
   version:
     description: The version number used for the NuGet package
@@ -102,15 +113,18 @@ runs:
         if ("${{ inputs.namespace }}") {
           $args = "$args --namespace ${{ inputs.namespace }}"
         }
-        if ($${{ inputs.use-api-response }}) {
+        if ("${{ inputs.use-api-response }}") {
           $args = "$args --use-api-response"
         }
-        if ($${{ inputs.cancellation-tokens }}) {
+        if ("${{ inputs.cancellation-tokens }}") {
           $args = "$args --cancellation-tokens"
+        }
+        if ("${{ inputs.multiple-interfaces }}") {
+          $args = "$args --multiple-interfaces ${{ inputs.multiple-interfaces }}"
         }
         Write-Host "refitter $input $args ${{ inputs.command-args }}"
         Start-Process refitter `
-          -Args "$input $args ${{ inputs.command-args }}" `
+          -Args "$input $args ${{ inputs.command-args }} --output ${{ inputs.output-filename }}" `
           -NoNewWindow `
           -PassThru `
           -Wait

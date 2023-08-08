@@ -18,11 +18,17 @@ Return `Task<IApiResponse<T>>` instead of `Task<T>`
 ### `cancellation-tokens`
 Use cancellation tokens
 
+### `multiple-interfaces`
+Generate a Refit interface for each endpoint. May be one of `ByEndpoint`, `ByTag`
+
 ### `command-args`
 Additional arguments to pass through to the [Refitter](https://github.com/christianhelle/refitter) CLI tool.
 
 ### `publish-artifacts`
 Publish the generated nuget package as a build artifact
+
+### `output-filename`
+No outputs are returned. The generated client is placed in the current directory and using the `output-filename` (Default: **`Output.cs`**) value. The output file contains both the Refit interface and the contract types used by the API
 
 ### `version`
 The version number used for the NuGet package (default: `1.0.${{ github.run_number }}`)
@@ -62,9 +68,6 @@ The value used as `<PackageProjectUrl>` and `<RepositoryUrl>` for package - the 
 
 ### `repository-type`
 The value used as `<RepositoryType>` for package the generated code into a NuGet package
-
-## Outputs
-No outputs are returned. The generated client is placed in the current directory and called **Output.cs** which contains both the Refit interface and the contract types used by the API
 
 
 # Examples
